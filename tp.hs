@@ -1,28 +1,29 @@
 module TestTiles where
 
-import GHC.Base (getTag)
-getTiles = [[left,bottom,right,top]|left<-[0,1], bottom<-[0,1], right<-[0,1], top<-[0,1]]
+-- celeste = 0
+-- amarillo = 1
+getTiles = [[west,south,east,north]|west<-[0,1], south<-[0,1], east<-[0,1], north<-[0,1]]
 
-createTiles typeof 0 = []
-createTiles typeof n = [getATile typeof] ++ createTiles typeof (n-1)
+createTiles index 0 = []
+createTiles index n = [getATile index] ++ createTiles index (n-1)
 
 --subIndex :: (Eq t, Num t) => [p] -> t -> p
 subIndex (x:_) 0 = x
 subIndex (_:xs) n = subIndex xs (n-1)
 
 --getATile :: Int -> (Integer, Integer, Integer, Integer)
-getATile t = subIndex getTiles t
+getATile index = subIndex getTiles index
 
-getSum left bottom right top = left * 8 + bottom * 4 + right * 2 + top
+getSum west south east north = west * 8 + south * 4 + east * 2 + north
 
-getATileByNum (left, bottom, right, top) = getSum left bottom right top
+getTileIndex (west, south, east, north) = getSum west south east north
 
--- getLeft (x:xs) left = if subIndex x 0 == left then x else getLeft xs left
--- getTop :: Eq t => [[t]] -> t -> [t]
--- getTop (x:xs) top = if subIndex x 3 == top then x else getTop xs top
+-- getWest (x:xs) west = if subIndex x 0 == west then x else getWest xs west
+-- getNorth :: Eq t => [[t]] -> t -> [t]
+-- getNorth (x:xs) north = if subIndex x 3 == north then x else getNorth xs north
 
--- para position left=0 top=3
--- y parametros left y top ahora es match
+-- para position west=0 north=3
+-- y parametros west y north ahora es match
 getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
 
 myDrop [] n = []
@@ -40,8 +41,6 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
     | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
         = error "la superficie es mayor que la cantidad de teselas"
     | otherwise = myTiles
-        --completeSurface n m seed myTiles
-        --useTile myTiles seed
     where myTiles = [createTiles 0 t0] ++
                   [createTiles 1 t1] ++
                   [createTiles 2 t2] ++
@@ -67,7 +66,7 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
 
 initSurface x y = []
 
---matchTile left bottom right top =
+--matchTile west south east north =
 --getNg ng = mod ng 3
 
 

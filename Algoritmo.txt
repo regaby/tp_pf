@@ -1,0 +1,38 @@
+Área:
+---------
+| | | | |
+---------
+| | | | |
+---------
+| | | | |
+---------
+| | | | |
+---------
+        (n,m)
+
+PilaTeselas
+-----     ---
+| | |.....| |
+-----     ---(k) | k >= (m x n)
+
+
+Definir estructura de teselas
+Determinar tamaño del Área A(n,m) donde n=cantidad de filas, m=cantidad de columnas
+Determinar cantidad de teselas {k | k >= (m x n)}
+pilaTeselas = generarTeselas(k)
+para fila=i, j, m
+	para columna=j, n
+		condicionesPerimetro ←  teselasAdyacentes 	{-- Q([lado1,color1],[lado2,color2],i,j) 	--}
+													{-- Determinar los lados y los colores del	--}
+													{-- perimetro dada la posición (i,j) 		--}
+		tesela ← tomarTesela
+		mientrasque (condicionesPerimetro = condicionesTesela(tesela) y tesela <> null)
+			tesela ← tomarTesela
+		fmientrasque
+		si tesela <> null
+			A(i,j) ← tesela
+		sino
+			retonar "Sin solución"
+		fsi
+	fpara
+fpara

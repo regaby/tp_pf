@@ -1,5 +1,5 @@
 module TeselasWang where
--- import System.Random
+import System.Random
 -- rollDice :: IO Int
 -- rollDice = getStdRandom (randomR (0,15))
 
@@ -7,49 +7,62 @@ module TeselasWang where
 Función    : getTile
 Descripcion: Define conjunto de teselas (0=celeste, 1=amarillo)
 Parámetros : ninguno
-Retorno    : ninguno
+Retorno    : Lista de 15 teselas
 --------------------------------------------------}
 getTiles = [[north,east,south,west]|north<-[0,1], east<-[0,1], south<-[0,1], west<-[0,1]]
 
-createTiles index 0 = []
-createTiles index n = [getATile index] ++ createTiles index (n-1)
+{------------------------------------------------
+Función    : getATile
+Descripcion: Obtiene un tesela dado el indice/peso
+Parámetros : Indice/peso de la tesela
+Retorno    : Lista de la tesela con sus 4 lados: west south east north | {0,1}
+--------------------------------------------------}
+getATile :: (Eq t, Num t) => t -> [Integer]
+getATile index = subIndex getTiles index
 
---subIndex :: (Eq t, Num t) => [p] -> t -> p
+{------------------------------------------------
+Función    : subIndex
+Descripcion: Obtiene el n elemento de una lista
+Parámetros : lista , indice n
+Retorno    : n elemento
+--------------------------------------------------}
 subIndex (x:_) 0 = x
 subIndex (_:xs) n = subIndex xs (n-1)
-
---getATile :: Int -> (Integer, Integer, Integer, Integer)
-getATile index = subIndex getTiles index
 
 {------------------------------------------------
 Función    : getSum
 Descripcion: Determina el peso de la tesela
-Parámetros : north east south west | {0,1}
+Parámetros : west south east north | {0,1}
 Retorno    : peso de la tesela
 --------------------------------------------------}
 getSum west south east north = west * 8 + south * 4 + east * 2 + north
 
+{------------------------------------------------
+Función    : getTileIndex
+Descripcion: Idem a getSum
+Parámetros : tupla: (west, south, east, north | {0,1})
+Retorno    : peso de la tesela
+--------------------------------------------------}
 getTileIndex (west, south, east, north) = getSum west south east north
 
--- getWest (x:xs) west = if subIndex x 0 == west then x else getWest xs west
--- getNorth :: Eq t => [[t]] -> t -> [t]
--- getNorth (x:xs) north = if subIndex x 3 == north then x else getNorth xs north
+{------------------------------------------------
+Función    : createTiles
+Descripcion: Crea una lista de teselas
+Parámetros : index = el peso de la tesela. n = cantidad de tesela a crear
+Retorno    : Lista de teselas
+--------------------------------------------------}
+createTiles index 0 = []
+createTiles index n = [getATile index] ++ createTiles index (n-1)
 
--- para position west=0 north=3
--- y parametros west y north ahora es match
-getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
-
-myDrop [] n = []
-myDrop xs 0 = xs
-myDrop (x:xs) n = myDrop xs (n-1)
-
-useTile (x:xs) typeof = myDrop getTypeofTyle 1
-    where getTypeofTyle = subIndex (x:xs) typeof
-
-
-
-completeSurface n m seed (x:xs) = useTile
-
+{------------------------------------------------
+Función    : solveTiles
+Descripcion: ....
+Parámetros :
+    n m = dimensión la superficie a teselar
+    t0 - t15 = cantidad de teselas a cada tipo
+    seed = tesela inicial que se posicionará en 0,0
+Retorno    : lista con el teselado resuelto
+--------------------------------------------------}
 solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
     | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
         = error "la superficie es mayor que la cantidad de teselas"
@@ -71,11 +84,31 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
                   [createTiles 14 t14] ++
                   [createTiles 15 t15]
 
-
-
 -- - hacer una lista con todos los tiles de 1 a 16 instanciados
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
+
+-- rollDice :: IO Int
+-- rollDice = getStdRandom (randomR (0,15))
+
+-- getWest (x:xs) west = if subIndex x 0 == west then x else getWest xs west
+-- getNorth :: Eq t => [[t]] -> t -> [t]
+-- getNorth (x:xs) north = if subIndex x 3 == north then x else getNorth xs north
+
+-- para position west=0 north=3
+-- y parametros west y north ahora es match
+getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
+
+myDrop [] n = []
+myDrop xs 0 = xs
+myDrop (x:xs) n = myDrop xs (n-1)
+
+useTile (x:xs) typeof = myDrop getTypeofTyle 1
+    where getTypeofTyle = subIndex (x:xs) typeof
+
+completeSurface n m seed (x:xs) = useTile
+
+
 
 initSurface x y = []
 

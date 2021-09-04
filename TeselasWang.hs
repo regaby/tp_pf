@@ -1,4 +1,7 @@
 module TeselasWang where
+-- import System.Random
+-- rollDice :: IO Int
+-- rollDice = getStdRandom (randomR (0,15))
 
 {------------------------------------------------
 Función    : getTile
@@ -24,7 +27,7 @@ Descripcion: Determina el peso de la tesela
 Parámetros : north east south west | {0,1}
 Retorno    : peso de la tesela
 --------------------------------------------------}
-getSum north east south west = west * 8 + south * 4 + east * 2 + north
+getSum west south east north = west * 8 + south * 4 + east * 2 + north
 
 getTileIndex (west, south, east, north) = getSum west south east north
 

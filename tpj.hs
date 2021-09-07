@@ -94,22 +94,31 @@ initSurface x y = []
 --matchTile west south east north =
 --getNg ng = mod ng 3
 
---Typos de teselas seleccionadas
+--Tipos de teselas seleccionadas "se completa manualmente"
 tilesType :: [Int]
 tilesType = [0, 1]
---Cantidad de cada tesela seleccionada
+--Cantidad de cada tesela seleccionada "se completa manualmente"
 tilesAmount :: [Int]
 tilesAmount = [2, 2]
 
---poblar (x:xs) (y:ys) = take y (repeat x)
---poblar (x:xs) (y:ys) = [take y (repeat x) | x <- [1..10]]
 --Bolsa de teselas
 tilesBag [] [] = []
 tilesBag (x:xs) [] = []
 tilesBag [] (y:ys) = []
 tilesBag (x:xs) (y:ys) = (replicate y x) ++ tilesBag xs ys
---  | xs ys = [x | x <- xs, y <- ys, replicate y x ]
--- | (x:xs) (y:ys) = [(x : ) | x <- (x:xs)] ys
+
+--allSolutions :: Eq a => [a] -> [[a]]
+--allSolutions [] = [[]]
+--allSolutions xs = [a:p | a <- xs, p <- allSolutions(xs \\ [a])]
+
+--Todas las soluciones "allSolutions (tilesBag tilesType tilesAmount)"
+allSolutions :: [a] -> [[a]]
+allSolutions [] = [[]]
+allSolutions (x:xs) = [zs | ys <- allSolutions xs,
+                            zs <- intercala x ys]
+intercala :: a -> [a] -> [[a]]
+intercala e [] = [[e]]
+intercala e (x:xs) = (e:x:xs) : [(x:ys) | ys <- (intercala e xs)]
 
 --     [[0,0,0,0],
 --      [1,0,0,0],

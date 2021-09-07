@@ -2,13 +2,6 @@ module TestTiles where
 --d:\facu\doctorado\materias\04pf\practica
 -- celeste = 0
 -- amarillo = 1
---data Lado = West Int | South Int | East Int | North Int deriving (Show)
---data Tile = Wang West: South: East: North deriving (Show)
---data south = 0 | 1
---data east = 0 | 1
---data north = 0 | 1
---data lado = west int | south int | east int | north int
---data Tile = Tile [Integer, Integer, Integer, Integer]
 
 -- Genera todas las teselas de Wang
 getTiles = [[west,south,east,north]|west<-[0,1], south<-[0,1], east<-[0,1], north<-[0,1]]
@@ -56,9 +49,16 @@ useTile (x:xs) typeof = myDrop getTypeofTyle 1
 --  0 0 _ = []
 --  _ _ a = [a]
 
---  getATile 0
+--  En desarrollo
+tomar [] = []
+tomar (x:xs) = [getATile x] ++ tomar xs
 
-tilesList = [[0,0,0,0],[0,0,0,1],[0,0,0,0],[0,0,0,0]]
+llenar n m xs 
+    | length xs < n*m = error "Las teselas no son suficientes para cubris este plano" 
+    | otherwise = xs
+
+
+--tilesList = [[0,0,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,1]]
 
 completeSurface n m seed (x:xs) = useTile
 

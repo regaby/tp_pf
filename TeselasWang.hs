@@ -1,7 +1,4 @@
 module TeselasWang where
-import System.Random
--- rollDice :: IO Int
--- rollDice = getStdRandom (randomR (0,15))
 
 {------------------------------------------------
 Función    : getTile
@@ -10,6 +7,8 @@ Parámetros : ninguno
 Retorno    : Lista de 15 teselas
 --------------------------------------------------}
 getTiles = [[north,east,south,west]|north<-[0,1], east<-[0,1], south<-[0,1], west<-[0,1]]
+
+getTiles' = zipWith (\x y -> (x, y)) [0..15] getTiles
 
 {------------------------------------------------
 Función    : getATile
@@ -43,7 +42,7 @@ Descripcion: Idem a getSum
 Parámetros : tupla: (west, south, east, north | {0,1})
 Retorno    : peso de la tesela
 --------------------------------------------------}
-getTileIndex (west, south, east, north) = getSum west south east north
+getTileIndex [west, south, east, north] = getSum west south east north
 
 {------------------------------------------------
 Función    : createTiles
@@ -61,88 +60,82 @@ Parámetros :
     n m = dimensión la superficie a teselar
     t0 - t15 = cantidad de teselas a cada tipo
     seed = tesela inicial que se posicionará en 0,0
+    edge = bordes . 0 = borde amarillo / 1 = borde celeste / 2 = indistinto
 Retorno    : lista con el teselado resuelto
 --------------------------------------------------}
-solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
+solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
     | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
         = error "la superficie es mayor que la cantidad de teselas"
-    | otherwise = myTiles
-    where myTiles = [createTiles 0 t0] ++
-                  [createTiles 1 t1] ++
-                  [createTiles 2 t2] ++
-                  [createTiles 3 t3] ++
-                  [createTiles 4 t4] ++
-                  [createTiles 5 t5] ++
-                  [createTiles 6 t6] ++
-                  [createTiles 7 t7] ++
-                  [createTiles 8 t8] ++
-                  [createTiles 9 t9] ++
-                  [createTiles 10 t10] ++
-                  [createTiles 11 t11] ++
-                  [createTiles 12 t12] ++
-                  [createTiles 13 t13] ++
-                  [createTiles 14 t14] ++
-                  [createTiles 15 t15]
+    | otherwise = completeSurface n m seed edge myTiles
+    --   otherwise = myTiles
+    where myTiles = createTiles 0 t0 ++
+                  createTiles 1 t1 ++
+                  createTiles 2 t2 ++
+                  createTiles 3 t3 ++
+                  createTiles 4 t4 ++
+                  createTiles 5 t5 ++
+                  createTiles 6 t6 ++
+                  createTiles 7 t7 ++
+                  createTiles 8 t8 ++
+                  createTiles 9 t9 ++
+                  createTiles 10 t10 ++
+                  createTiles 11 t11 ++
+                  createTiles 12 t12 ++
+                  createTiles 13 t13 ++
+                  createTiles 14 t14 ++
+                  createTiles 15 t15
 
 -- - hacer una lista con todos los tiles de 1 a 16 instanciados
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
 
--- rollDice :: IO Int
--- rollDice = getStdRandom (randomR (0,15))
+getMatch w n = filter (\x -> x!!0 == w && x!!3 == n) getTiles
 
--- getWest (x:xs) west = if subIndex x 0 == west then x else getWest xs west
--- getNorth :: Eq t => [[t]] -> t -> [t]
--- getNorth (x:xs) north = if subIndex x 3 == north then x else getNorth xs north
+getMatch' :: Eq a => [[a]] -> a -> a -> a -> a -> [[a]]
+getMatch' (x:xs) w s e n = filter (\x ->x!!0 == w &&
+                                        x!!1 == s &&
+                                        x!!2 == e &&
+                                        x!!3 == n) (x:xs)
 
--- para position west=0 north=3
--- y parametros west y north ahora es match
-getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
-
-myDrop [] n = []
-myDrop xs 0 = xs
-myDrop (x:xs) n = myDrop xs (n-1)
-
-useTile (x:xs) typeof = myDrop getTypeofTyle 1
-    where getTypeofTyle = subIndex (x:xs) typeof
-
-completeSurface n m seed (x:xs) = useTile
+getMatch'' (x:xs) [w, s, e, n] = filter (\x ->x!!0 == w &&
+                                        x!!1 == s &&
+                                        x!!2 == e &&
+                                        x!!3 == n) (x:xs)
 
 
+getIndex (x:xs) [w, s, e, n] = if getIndex'(x:xs) [w, s, e, n] > 0 then length(x:xs) - getIndex'(x:xs) [w, s, e, n] else -1
 
-initSurface x y = []
+getIndex' :: Eq a => [[a]] -> [a] -> Int
+getIndex' [] [w, s, e, n] = 0
+getIndex' (x:xs) [w, s, e, n]
+    | x!!0 == w && x!!1 == s && x!!2 == e && x!!3 == n = length(x:xs)
+    | otherwise = getIndex' xs [w, s, e, n]
 
---matchTile west south east north =
---getNg ng = mod ng 3
+-- Esta funcion me elimina la sublistas vacias de una lista
+filterList :: [[a]] -> [a]
+filterList [] = []
+filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
+
+-- "cruzo" las dos listas
+getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
+    where matches = getMatch w n
+
+getFirst (myT:myTs) w  n = getMatches (myT:myTs) w n
+
+iterates n edge (x:xs) (myT:myTs)
+    | n == 1 = (x:xs)
+    | otherwise = iterates (n-1) edge matchTile headTile
+    where matchTile = (x:xs) ++ theTile
+          theTile = getMatches (myT:myTs) (last(x:xs) !! 2) edge
+          headTile = [head theTile]
+          headTile' = head theTile
+          myTiles = useTile (myT:myTs) headTile'
+          --myTiles = (myT:myTs)
 
 
+useTile :: Eq a => [[a]] -> [a] -> [[a]]
+useTile (x:xs) [w, s, e, n] = take index (x:xs) ++ drop next_index (x:xs)
+    where index = getIndex (x:xs) [w, s, e, n]
+          next_index = index + 1
 
---     [[0,0,0,0],
---      [1,0,0,0],
---      [0,1,0,0],
---      [1,1,0,0],
---      [0,0,1,0],
---      [1,0,1,0],
---      [0,1,1,0],
---      [1,1,1,0],
---      [0,0,0,1],
---      [1,0,0,1],
---      [0,1,0,1],
---      [1,1,0,1],
---      [0,1,0,1],
---      [1,0,1,1],
---      [0,1,1,1],
---      [1,1,1,1],
--- ]
--- datos:
--- - superficie n x n
--- - cantidad de teselas de cada tipo: t0 a t16
--- coincide arriba? 0 o 1
--- coincide a la derecha? 0 o 1
--- coincide abajo? 0 o 1
--- coincide a izquierda? 0 o 1
-
--- sup 2x2
--- iniciar con un tile (random?) en 0,0
--- 0000
--- coincide a la derecha? con 0
+completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge [getATile seed] (myT:myTs)

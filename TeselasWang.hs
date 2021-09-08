@@ -102,7 +102,7 @@ iterates n edge (x:xs) (myT:myTs) row col
           headTile = [head theTile]
           headTile' = head theTile
           --theTile = getMatches myTiles' (last(x:xs) !! 2) edge
-          theTile = getMatches' myTiles' (last(x:xs) !! 2) edge (n-2) row col (x:xs)
+          theTile = getMatches' myTiles' (last(x:xs) !! 2) (n-2) row col (x:xs)
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
@@ -110,29 +110,20 @@ iterates n edge (x:xs) (myT:myTs) row col
 getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
     where matches = getMatch w n
 
-getMatches' (myT:myTs) west edge n row col (x:xs)
-    | n > ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
-    | n == ((row * col) - col) = filterList [getMatch'' (myT:myTs) c | c <- matches'] -- primer fila ultima casilla
-    | n < (row * col) - col && n > col  = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n + 1
-    | n < (row * col) - col && mod n col == 0 = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n + 1 ultima casilla
-    -- | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''''] -- fila n primer casilla
-    | n < col && n >= -1      = filterList [getMatch'' (myT:myTs) c | c <- matches''''''] -- ultima fila
-    | n == -2                 = filterList [getMatch'' (myT:myTs) c | c <- matches''''] -- ultima fila ultima casilla
-    -- | otherwise = [[9,9,9,9]]
-    --  | n == 0 = filterList [getMatch'' (x:xs) c | c <- matches'']
-    where matches       = getMatch west edge -- west north
-          matches'      = getMatch' west edge edge -- west east north
+getMatches' (myT:myTs) west n row col (x:xs)
+    | n >= ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
+    | n < ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n
+    where matches       = getMatch''''' west -- west
           matches''     = getMatch west get_top -- west north
-          matches'''    = getMatch' west edge get_top -- west east north
-          matches''''   = getMatch''' west edge edge get_top -- west south east north
-          matches'''''  = getMatch edge get_top -- west north
-          matches'''''' = getMatch'''' west edge get_top -- west south north
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
 filterList :: [[a]] -> [a]
 filterList [] = error "no hay solucion"
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
+
+getMatch''''' w        = filter (\x -> x!!0 == w -- && x!!3 == n
+                                    ) getTiles
 
 getMatch w n        = filter (\x -> x!!0 == w &&
                                     x!!3 == n) getTiles

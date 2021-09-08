@@ -103,20 +103,24 @@ iterates n edge (x:xs) (myT:myTs) row col
 
 -- "cruzo" las dos listas
 getMatches (myT:myTs) west n row col (x:xs)
-    | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n primer casilla
-    | n >= ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
-    | n < ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n
-    where matches       = getMatchW west -- west
-          matches''     = getMatchWN west get_top -- west north
-          matches'''     = getMatchN  get_top -- north
+    | mod (n + 1) col == 0     = filterList [getMatch'' (myT:myTs) c | c <- matchesN] -- fila n primer casilla
+    | n >= ((row * col) - col) = filterList [getMatch'' (myT:myTs) c | c <- matchesW] -- primer fila
+    | n < ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matchesWN] -- fila n
+    where matchesN     = getMatchN  get_top -- north
+          matchesW       = getMatchW west -- west
+          matchesWN     = getMatchWN west get_top -- west north
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
 filterList [] = [[9,9,9,9]]
+--filterList [] = error "no hay solucion"
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
-getMatchWN w n = if n/= 9  then filter (\x -> x!!0 == w &&
-                                              x!!3 == n) getTiles else getMatchW w
+getMatchWN w n
+    | n == 9 = getMatchW w
+    | w == 9 = getMatchN n
+    | otherwise = filter (\x -> x!!0 == w &&
+                                x!!3 == n) getTiles
 
 getMatchW :: Integer -> [[Integer]]
 getMatchW w = filter (\x -> x!!0 == w) getTiles

@@ -121,8 +121,9 @@ getMatches' (myT:myTs) west n row col (x:xs)
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
-filterList :: [[a]] -> [a]
-filterList [] = error "no hay solucion"
+-- filterList :: [[a]] -> [a]
+-- filterList [] = error "no hay solucion"
+filterList [] = [[9,9,9,9]]
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
 getMatch''''' w        = filter (\x -> x!!0 == w -- && x!!3 == n
@@ -132,8 +133,8 @@ getMatch''''' w        = filter (\x -> x!!0 == w -- && x!!3 == n
 getMatch'''''' n        = filter (\x -> x!!3 == n
                                     ) getTiles
 
-getMatch w n        = filter (\x -> x!!0 == w &&
-                                    x!!3 == n) getTiles
+getMatch w n        = if n/= 9  then filter (\x -> x!!0 == w &&
+                                    x!!3 == n) getTiles else getMatch''''' w
 
 getMatch' w e n     = filter (\x ->x!!0 == w &&
                                    x!!2 == e &&

@@ -85,10 +85,6 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
                   createTiles 14 t14 ++
                   createTiles 15 t15
 
--- - hacer una lista con todos los tiles de 1 a 16 instanciados
--- - iniciar superficie
--- - ir iterando lista y comprobando si el tile coincide con los adyacentes
-
 completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge headTile myTiles n m
     where headTile = [getATile seed]
           headTile' = getATile seed
@@ -120,8 +116,6 @@ getMatches' (myT:myTs) west n row col (x:xs)
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
--- filterList :: [[a]] -> [a]
--- filterList [] = error "no hay solucion"
 filterList [] = [[9,9,9,9]]
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
@@ -130,7 +124,6 @@ getMatchWN w n = if n/= 9  then filter (\x -> x!!0 == w &&
 
 getMatchW :: Integer -> [[Integer]]
 getMatchW w = filter (\x -> x!!0 == w) getTiles
-
 
 getMatchN n = filter (\x -> x!!3 == n) getTiles
 

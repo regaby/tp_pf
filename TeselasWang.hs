@@ -111,10 +111,13 @@ getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
     where matches = getMatch w n
 
 getMatches' (myT:myTs) west n row col (x:xs)
-    | n >= ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
-    | n < ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n
+    | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n primer casilla
+    | n >= ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
+    | n < ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n
+
     where matches       = getMatch''''' west -- west
           matches''     = getMatch west get_top -- west north
+          matches'''     = getMatch''''''  get_top -- north
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
@@ -123,6 +126,10 @@ filterList [] = error "no hay solucion"
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
 getMatch''''' w        = filter (\x -> x!!0 == w -- && x!!3 == n
+                                    ) getTiles
+
+
+getMatch'''''' n        = filter (\x -> x!!3 == n
                                     ) getTiles
 
 getMatch w n        = filter (\x -> x!!0 == w &&

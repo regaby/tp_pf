@@ -97,16 +97,12 @@ iterates n edge (x:xs) (myT:myTs) row col
     where matchTile = (x:xs) ++ headTile
           headTile = [head theTile]
           headTile' = head theTile
-          --theTile = getMatches myTiles' (last(x:xs) !! 2) edge
-          theTile = getMatches' myTiles' (last(x:xs) !! 2) (n-2) row col (x:xs)
+          theTile = getMatches myTiles' (last(x:xs) !! 2) (n-2) row col (x:xs)
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
 -- "cruzo" las dos listas
-getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
-    where matches = getMatchWN w n
-
-getMatches' (myT:myTs) west n row col (x:xs)
+getMatches (myT:myTs) west n row col (x:xs)
     | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n primer casilla
     | n >= ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
     | n < ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n

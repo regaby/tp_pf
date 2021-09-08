@@ -67,7 +67,7 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
     | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
         = error "la superficie es mayor que la cantidad de teselas"
     | otherwise = completeSurface n m seed edge myTiles
-    --   otherwise = myTiles
+      --otherwise = myTiles
     where myTiles = createTiles 0 t0 ++
                   createTiles 1 t1 ++
                   createTiles 2 t2 ++
@@ -89,20 +89,20 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
 
-completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge headTile myTiles
+completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge headTile myTiles n m
     where headTile = [getATile seed]
           headTile' = getATile seed
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
-iterates n edge (x:xs) (myT:myTs)
+iterates n edge (x:xs) (myT:myTs) row col
     | n == 1 = (x:xs)
-    | otherwise =  --matchTile--x:xs--theTile -- (x:xs) ++ headTile
-        iterates (n-1) edge matchTile myTiles
+    | otherwise =  iterates (n-1) edge matchTile myTiles row col
     where matchTile = (x:xs) ++ headTile
           headTile = [head theTile]
           headTile' = head theTile
-          theTile = getMatches myTiles' (last(x:xs) !! 2) edge
+          --theTile = getMatches myTiles' (last(x:xs) !! 2) edge
+          theTile = getMatches' myTiles' (last(x:xs) !! 2) edge (n-2) row col (x:xs)
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
@@ -110,23 +110,50 @@ iterates n edge (x:xs) (myT:myTs)
 getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
     where matches = getMatch w n
 
+getMatches' (myT:myTs) west edge n row col (x:xs)
+    | n > ((row * col) - col)  = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
+    | n == ((row * col) - col) = filterList [getMatch'' (myT:myTs) c | c <- matches'] -- primer fila ultima casilla
+    | n < (row * col) - col && n > col  = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n + 1
+    | n < (row * col) - col && mod n col == 0 = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n + 1 ultima casilla
+    -- | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''''] -- fila n primer casilla
+    | n < col && n >= -1      = filterList [getMatch'' (myT:myTs) c | c <- matches''''''] -- ultima fila
+    | n == -2                 = filterList [getMatch'' (myT:myTs) c | c <- matches''''] -- ultima fila ultima casilla
+    -- | otherwise = [[9,9,9,9]]
+    --  | n == 0 = filterList [getMatch'' (x:xs) c | c <- matches'']
+    where matches       = getMatch west edge -- west north
+          matches'      = getMatch' west edge edge -- west east north
+          matches''     = getMatch west get_top -- west north
+          matches'''    = getMatch' west edge get_top -- west east north
+          matches''''   = getMatch''' west edge edge get_top -- west south east north
+          matches'''''  = getMatch edge get_top -- west north
+          matches'''''' = getMatch'''' west edge get_top -- west south north
+          get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
+
 -- Esta funcion me elimina la sublistas vacias de una lista
 filterList :: [[a]] -> [a]
 filterList [] = error "no hay solucion"
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
-getMatch w n = filter (\x -> x!!0 == w && x!!3 == n) getTiles
+getMatch w n        = filter (\x -> x!!0 == w &&
+                                    x!!3 == n) getTiles
 
-getMatch' :: Eq a => [[a]] -> a -> a -> a -> a -> [[a]]
-getMatch' (x:xs) w s e n = filter (\x ->x!!0 == w &&
-                                        x!!1 == s &&
-                                        x!!2 == e &&
-                                        x!!3 == n) (x:xs)
+getMatch' w e n     = filter (\x ->x!!0 == w &&
+                                   x!!2 == e &&
+                                   x!!3 == n) getTiles
 
-getMatch'' (x:xs) [w, s, e, n] = filter (\x ->x!!0 == w &&
-                                        x!!1 == s &&
-                                        x!!2 == e &&
-                                        x!!3 == n) (x:xs)
+getMatch''' w s e n = filter (\x ->x!!0 == w &&
+                                   x!!1 == s &&
+                                   x!!2 == e &&
+                                   x!!3 == n) getTiles
+
+getMatch'''' w s n  = filter (\x ->x!!0 == w &&
+                                   x!!1 == s &&
+                                   x!!3 == n) getTiles
+
+getMatch'' (myT:myTs) [w, s, e, n] = filter (\x ->x!!0 == w &&
+                                                  x!!1 == s &&
+                                                  x!!2 == e &&
+                                                  x!!3 == n) (myT:myTs)
 
 useTile :: Eq a => [[a]] -> [a] -> [[a]]
 useTile (x:xs) [w, s, e, n] = take index (x:xs) ++ drop next_index (x:xs)

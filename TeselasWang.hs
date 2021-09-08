@@ -60,13 +60,12 @@ Parámetros :
     n m = dimensión la superficie a teselar
     t0 - t15 = cantidad de teselas a cada tipo
     seed = tesela inicial que se posicionará en 0,0
-    edge = bordes . 0 = borde amarillo / 1 = borde celeste / 2 = indistinto
 Retorno    : lista con el teselado resuelto
 --------------------------------------------------}
-solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
+solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
     | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
         = error "la superficie es mayor que la cantidad de teselas"
-    | otherwise = completeSurface n m seed edge myTiles
+    | otherwise = completeSurface n m seed myTiles
       --otherwise = myTiles
     where myTiles = createTiles 0 t0 ++
                   createTiles 1 t1 ++
@@ -85,15 +84,15 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
                   createTiles 14 t14 ++
                   createTiles 15 t15
 
-completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge headTile myTiles n m
+completeSurface n m seed (myT:myTs) = iterates (n*m) headTile myTiles n m
     where headTile = [getATile seed]
           headTile' = getATile seed
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
-iterates n edge (x:xs) (myT:myTs) row col
+iterates n (x:xs) (myT:myTs) row col
     | n == 1 = (x:xs)
-    | otherwise =  iterates (n-1) edge matchTile myTiles row col
+    | otherwise =  iterates (n-1) matchTile myTiles row col
     where matchTile = (x:xs) ++ headTile
           headTile = [head theTile]
           headTile' = head theTile

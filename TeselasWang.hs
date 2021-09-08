@@ -108,16 +108,15 @@ iterates n edge (x:xs) (myT:myTs) row col
 
 -- "cruzo" las dos listas
 getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
-    where matches = getMatch w n
+    where matches = getMatchWN w n
 
 getMatches' (myT:myTs) west n row col (x:xs)
     | mod (n + 1) col == 0   = filterList [getMatch'' (myT:myTs) c | c <- matches'''] -- fila n primer casilla
     | n >= ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches] -- primer fila
     | n < ((row * col) - col)   = filterList [getMatch'' (myT:myTs) c | c <- matches''] -- fila n
-
-    where matches       = getMatch''''' west -- west
-          matches''     = getMatch west get_top -- west north
-          matches'''     = getMatch''''''  get_top -- north
+    where matches       = getMatchW west -- west
+          matches''     = getMatchWN west get_top -- west north
+          matches'''     = getMatchN  get_top -- north
           get_top       = ((x:xs) !! (length(x:xs)-col) !! 1)
 
 -- Esta funcion me elimina la sublistas vacias de una lista
@@ -126,28 +125,14 @@ getMatches' (myT:myTs) west n row col (x:xs)
 filterList [] = [[9,9,9,9]]
 filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
-getMatch''''' w        = filter (\x -> x!!0 == w -- && x!!3 == n
-                                    ) getTiles
+getMatchWN w n = if n/= 9  then filter (\x -> x!!0 == w &&
+                                              x!!3 == n) getTiles else getMatchW w
+
+getMatchW :: Integer -> [[Integer]]
+getMatchW w = filter (\x -> x!!0 == w) getTiles
 
 
-getMatch'''''' n        = filter (\x -> x!!3 == n
-                                    ) getTiles
-
-getMatch w n        = if n/= 9  then filter (\x -> x!!0 == w &&
-                                    x!!3 == n) getTiles else getMatch''''' w
-
-getMatch' w e n     = filter (\x ->x!!0 == w &&
-                                   x!!2 == e &&
-                                   x!!3 == n) getTiles
-
-getMatch''' w s e n = filter (\x ->x!!0 == w &&
-                                   x!!1 == s &&
-                                   x!!2 == e &&
-                                   x!!3 == n) getTiles
-
-getMatch'''' w s n  = filter (\x ->x!!0 == w &&
-                                   x!!1 == s &&
-                                   x!!3 == n) getTiles
+getMatchN n = filter (\x -> x!!3 == n) getTiles
 
 getMatch'' (myT:myTs) [w, s, e, n] = filter (\x ->x!!0 == w &&
                                                   x!!1 == s &&
@@ -166,5 +151,3 @@ getIndex' [] [w, s, e, n] = 0
 getIndex' (x:xs) [w, s, e, n]
     | x!!0 == w && x!!1 == s && x!!2 == e && x!!3 == n = length(x:xs)
     | otherwise = getIndex' xs [w, s, e, n]
-
-

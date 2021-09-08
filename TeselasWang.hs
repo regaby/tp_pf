@@ -89,6 +89,32 @@ solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed edge
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
 
+completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge headTile myTiles
+    where headTile = [getATile seed]
+          headTile' = getATile seed
+          myTiles = useTile myTiles' headTile'
+          myTiles' = (myT:myTs)
+
+iterates n edge (x:xs) (myT:myTs)
+    | n == 1 = (x:xs)
+    | otherwise =  --matchTile--x:xs--theTile -- (x:xs) ++ headTile
+        iterates (n-1) edge matchTile myTiles
+    where matchTile = (x:xs) ++ headTile
+          headTile = [head theTile]
+          headTile' = head theTile
+          theTile = getMatches myTiles' (last(x:xs) !! 2) edge
+          myTiles = useTile myTiles' headTile'
+          myTiles' = (myT:myTs)
+
+-- "cruzo" las dos listas
+getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
+    where matches = getMatch w n
+
+-- Esta funcion me elimina la sublistas vacias de una lista
+filterList :: [[a]] -> [a]
+filterList [] = error "no hay solucion"
+filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
+
 getMatch w n = filter (\x -> x!!0 == w && x!!3 == n) getTiles
 
 getMatch' :: Eq a => [[a]] -> a -> a -> a -> a -> [[a]]
@@ -102,6 +128,10 @@ getMatch'' (x:xs) [w, s, e, n] = filter (\x ->x!!0 == w &&
                                         x!!2 == e &&
                                         x!!3 == n) (x:xs)
 
+useTile :: Eq a => [[a]] -> [a] -> [[a]]
+useTile (x:xs) [w, s, e, n] = take index (x:xs) ++ drop next_index (x:xs)
+    where index = getIndex (x:xs) [w, s, e, n]
+          next_index = index + 1
 
 getIndex (x:xs) [w, s, e, n] = if getIndex'(x:xs) [w, s, e, n] > 0 then length(x:xs) - getIndex'(x:xs) [w, s, e, n] else -1
 
@@ -111,31 +141,4 @@ getIndex' (x:xs) [w, s, e, n]
     | x!!0 == w && x!!1 == s && x!!2 == e && x!!3 == n = length(x:xs)
     | otherwise = getIndex' xs [w, s, e, n]
 
--- Esta funcion me elimina la sublistas vacias de una lista
-filterList :: [[a]] -> [a]
-filterList [] = []
-filterList (x:xs) = if length (x) > 0 then x ++ filterList xs else filterList xs
 
--- "cruzo" las dos listas
-getMatches (x:xs) w n = filterList [getMatch'' (x:xs) c | c <- matches]
-    where matches = getMatch w n
-
-getFirst (myT:myTs) w  n = getMatches (myT:myTs) w n
-
-iterates n edge (x:xs) (myT:myTs)
-    | n == 1 = (x:xs)
-    | otherwise = iterates (n-1) edge matchTile headTile
-    where matchTile = (x:xs) ++ theTile
-          theTile = getMatches (myT:myTs) (last(x:xs) !! 2) edge
-          headTile = [head theTile]
-          headTile' = head theTile
-          myTiles = useTile (myT:myTs) headTile'
-          --myTiles = (myT:myTs)
-
-
-useTile :: Eq a => [[a]] -> [a] -> [[a]]
-useTile (x:xs) [w, s, e, n] = take index (x:xs) ++ drop next_index (x:xs)
-    where index = getIndex (x:xs) [w, s, e, n]
-          next_index = index + 1
-
-completeSurface n m seed edge (myT:myTs) = iterates (n*m) edge [getATile seed] (myT:myTs)

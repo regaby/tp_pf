@@ -45,19 +45,6 @@ useTile (x:xs) typeof = myDrop getTypeofTyle 1
 --placeTile fil col [] b
 --    | fil == 0 && col == 0 = fil col [getATile 0]
 
---placeTile n m a 
---  0 0 _ = []
---  _ _ a = [a]
-
---  En desarrollo
-tomar [] = []
-tomar (x:xs) = [getATile x] ++ tomar xs
-
-llenar n m xs 
-    | length xs < n*m = error "Las teselas no son suficientes para cubris este plano" 
-    | otherwise = xs
-
-
 --tilesList = [[0,0,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,1]]
 
 completeSurface n m seed (x:xs) = useTile
@@ -102,14 +89,12 @@ tilesAmount :: [Int]
 tilesAmount = [2, 2]
 
 --Bolsa de teselas
+tilesBag :: [a] -> [Int] -> [a]
 tilesBag [] [] = []
 tilesBag (x:xs) [] = []
 tilesBag [] (y:ys) = []
 tilesBag (x:xs) (y:ys) = (replicate y x) ++ tilesBag xs ys
 
---allSolutions :: Eq a => [a] -> [[a]]
---allSolutions [] = [[]]
---allSolutions xs = [a:p | a <- xs, p <- allSolutions(xs \\ [a])]
 
 --Todas las soluciones "allSolutions (tilesBag tilesType tilesAmount)"
 allSolutions :: [a] -> [[a]]
@@ -119,6 +104,39 @@ allSolutions (x:xs) = [zs | ys <- allSolutions xs,
 intercala :: a -> [a] -> [[a]]
 intercala e [] = [[e]]
 intercala e (x:xs) = (e:x:xs) : [(x:ys) | ys <- (intercala e xs)]
+
+allSolutions' :: [Int]
+allSolutions' = tilesBag tilesType tilesAmount
+
+--  En desarrollo
+tomar :: Num a => [a] -> [[Integer]]
+tomar [] = []
+tomar (x:xs) = [getATile x] ++ tomar xs
+
+llenar n m (x:xs)
+    | length (x:xs) < n*m = error "Las teselas no son suficientes para cubrir este plano" 
+    | otherwise = [[y | y<-(getATile x)]]++aux xs
+       where
+            aux [] = []
+            aux (x:xs) = [[z | z<-(getATile x)]] ++ aux xs
+            n_1 = x
+ --           n_m = z
+            pos = length xs
+            col = mod pos m
+            fil = div pos m 
+            n_m = if pos<=m then [] 
+                          else z 
+
+
+posición_1 :: Eq a => a -> [a] -> Int
+posición_1 x ys =
+  if elem x ys then aux x ys
+  else 0
+    where 
+      aux x [] = 0
+      aux x (y:ys)
+        | x== y     = 1
+        | otherwise = 1 + aux x ys
 
 --     [[0,0,0,0],
 --      [1,0,0,0],

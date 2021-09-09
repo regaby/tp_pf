@@ -43,6 +43,31 @@ Resultado:
     [15,8,0,1,3,10,12,2,4,6,9,135,5,7,14,11]
     
 ![teselado_4x4](sin_edge_4x4_15.gif)
+
+Ejemplo (con edge):
+-------------------
+    solveTiles 3 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 15 1
+
+    La superficie a teselar es de 4x4
+    La bolsa de teselas tiene 16 teselas, una de cada tipo
+    La tesela inicial es la 15
+    El borde es celeste
+
+Resultado:
+----------
+    [[1,1,1,1],[1,0,0,1],[0,0,0,1],[0,0,1,1],[1,0,1,1],[1,0,0,0],[0,0,0,0],[0,0,1,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],[1,0,1,0]]
+
+Para ver el resultado con el numero (indice) de cada tesela:
+------------------------------------------------------------
+
+    map getTileIndex (solveTiles 3 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 15 1)
+
+Resultado:
+----------
+
+    [15,9,1,3,11,8,0,2,12,4,6,10]
+    
+![teselado_3x4_edge](edge_1_3x4_15.gif)
     
 
 Créditos:

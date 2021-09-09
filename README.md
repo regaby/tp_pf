@@ -42,7 +42,7 @@ Resultado:
 
     [15,8,0,1,3,10,12,2,4,6,9,135,5,7,14,11]
     
-    ![teselado 4x4](sin_edge_4x4_15.gif)
+![teselado_4x4](sin_edge_4x4_15.gif)
     
 
 Créditos:

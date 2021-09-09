@@ -90,6 +90,18 @@ completeSurface n m seed (myT:myTs) = iterates (n*m) headTile myTiles n m
           myTiles = useTile myTiles' headTile'
           myTiles' = (myT:myTs)
 
+{------------------------------------------------
+Función    : iterates
+Descripcion: itera n veces, con las teselas pasadas, regresando la cuyo west empata con el este de la anterior
+Parámetros :
+    n = dimensión, total de celdas a cubrir
+    (x:xs) = Lista con la primer tesela, seed, con la forma [[tesela]]
+    (myT:myTs) = cantidad de teselas a cada tipo, ejemplo [0,0,5,5,6,4..]
+    row = filas
+    col = columnas
+Retorno    : lista con el teselado resuelto
+--------------------------------------------------}
+
 iterates n (x:xs) (myT:myTs) row col
     | n == 1 = (x:xs)
     | otherwise =  iterates (n-1) matchTile myTiles row col

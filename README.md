@@ -17,7 +17,7 @@ En donde:
     m = cantidad de columnas de la superficie a teselar
     t0 - t15 = cantidad de teselas de cada tipo
     seed = tesela inicial que se posicionará en 0,0
-    edge = Borde: 0 = Borde Amarillo / 1 = Borde Celeste
+    edge = Borde: 0 = Borde Celeste / 1 = Borde Amarillo
 
 Ejemplo (sin edge):
 -------------------
@@ -51,7 +51,7 @@ Ejemplo (con edge):
     La superficie a teselar es de 4x4
     La bolsa de teselas tiene 16 teselas, una de cada tipo
     La tesela inicial es la 15
-    El borde es celeste
+    El borde es amarillo
 
 Resultado:
 ----------

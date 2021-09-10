@@ -49,32 +49,20 @@ useTile (x:xs) typeof = myDrop getTypeofTyle 1
 
 completeSurface n m seed (x:xs) = useTile
 
-solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 seed
-    | n * m > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
+
+solveTiles' n m
+    | n * m > length possibleTiles
         = error "la superficie es mayor que la cantidad de teselas"
-    | otherwise = myTiles
-    where myTiles = [createTiles 0 t0] ++
-                  [createTiles 1 t1] ++
-                  [createTiles 2 t2] ++
-                  [createTiles 3 t3] ++
-                  [createTiles 4 t4] ++
-                  [createTiles 5 t5] ++
-                  [createTiles 6 t6] ++
-                  [createTiles 7 t7] ++
-                  [createTiles 8 t8] ++
-                  [createTiles 9 t9] ++
-                  [createTiles 10 t10] ++
-                  [createTiles 11 t11] ++
-                  [createTiles 12 t12] ++
-                  [createTiles 13 t13] ++
-                  [createTiles 14 t14] ++
-                  [createTiles 15 t15]
-
-
+    | otherwise = possibleTiles
+    where 
+      possibleTiles = allSolutions allSolutions'
 
 -- - hacer una lista con todos los tiles de 1 a 16 instanciados
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
+--  11 y 12
+wsenTiles []       = []
+wsenTiles (x:xs)  = [getATile x] ++ wsenTiles xs
 
 initSurface x y = []
 
@@ -124,8 +112,8 @@ llenar n m (x:xs)
             pos = length xs
             col = mod pos m
             fil = div pos m 
-            n_m = if pos<=m then [] 
-                          else z 
+--            n_m = if pos<=m then [] 
+--                          else z 
 
 
 posición_1 :: Eq a => a -> [a] -> Int

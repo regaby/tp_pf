@@ -32,14 +32,14 @@ getTileIndex (west, south, east, north) = getSum west south east north
 
 -- para position west=0 north=3
 -- y parametros west y north ahora es match
-getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
+--getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
 
-myDrop [] n = []
-myDrop xs 0 = xs
-myDrop (x:xs) n = myDrop xs (n-1)
+--myDrop [] n = []
+--myDrop xs 0 = xs
+--myDrop (x:xs) n = myDrop xs (n-1)
 
-useTile (x:xs) typeof = myDrop getTypeofTyle 1
-    where getTypeofTyle = subIndex (x:xs) typeof
+--useTile (x:xs) typeof = myDrop getTypeofTyle 1
+--    where getTypeofTyle = subIndex (x:xs) typeof
 
 -- Requiere de la cantidad de filas, columnas, el plano, y la lista de teselas
 --placeTile fil col [] b
@@ -47,16 +47,19 @@ useTile (x:xs) typeof = myDrop getTypeofTyle 1
 
 --tilesList = [[0,0,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,1]]
 
-completeSurface n m seed (x:xs) = useTile
+--completeSurface n m seed (x:xs) = useTile
 
 
 solveTiles' n m
     | n * m > length possibleTiles
         = error "la superficie es mayor que la cantidad de teselas"
-    | otherwise = possibleTiles
+--    | otherwise = possibleTiles
+    | otherwise = solutions (n*m) possibleTiles
     where 
       possibleTiles = allSolutions allSolutions'
 
+solutions p []      = []
+solutions p (x:xs)  = [x | x<-(x:xs),isSolution p x]
 -- - hacer una lista con todos los tiles de 1 a 16 instanciados
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
@@ -67,17 +70,16 @@ wsenTiles (x:xs)  = [getATile x] ++ wsenTiles xs
 
 --isSolution :: Int->[a]->bol
 --isSolution p (x:xs) = True && match ((x:xs)!!a) [] [] && isSolution p-1 (x:xs)
+--isSolution p (x:xs) = True && match' a (x:xs) && isSolution (p-1) (x:xs)
 isSolution 1 (x:xs) = True
-isSolution p (x:xs) = True && match' a (x:xs) && isSolution (p-1) (x:xs)
+isSolution p (x:xs) = True && match' a (wsenTiles (x:xs)) && isSolution (p-1) (x:xs)
   where
     ntotal  = length (x:xs)
     a       = (ntotal-p)+1
---    fil = truncate (sqrt (fromIntegral ntotal))
---    col = truncate (sqrt (fromIntegral ntotal))
---    fil==0 || col==0  = 
+
 --    sol = True && take index (x:xs) ++ drop next_index (x:xs)
 
-initSurface x y = []
+--initSurface x y = []
 
 {-
   Dadas de una a tres teselas determina si la primera empata 
@@ -129,34 +131,34 @@ allSolutions' :: [Int]
 allSolutions' = tilesBag tilesType tilesAmount
 
 --  En desarrollo
-tomar :: Num a => [a] -> [[Integer]]
-tomar [] = []
-tomar (x:xs) = [getATile x] ++ tomar xs
+--tomar :: Num a => [a] -> [[Integer]]
+--tomar [] = []
+--tomar (x:xs) = [getATile x] ++ tomar xs
 
-llenar n m (x:xs)
-    | length (x:xs) < n*m = error "Las teselas no son suficientes para cubrir este plano" 
-    | otherwise = [[y | y<-(getATile x)]]++aux xs
-       where
-            aux [] = []
-            aux (x:xs) = [[z | z<-(getATile x)]] ++ aux xs
-            n_1 = x
+--llenar n m (x:xs)
+--    | length (x:xs) < n*m = error "Las teselas no son suficientes para cubrir este plano" 
+---    | otherwise = [[y | y<-(getATile x)]]++aux xs
+--       where
+--            aux [] = []
+--            aux (x:xs) = [[z | z<-(getATile x)]] ++ aux xs
+--            n_1 = x
  --           n_m = z
-            pos = length xs
-            col = mod pos m
-            fil = div pos m 
+--            pos = length xs
+--            col = mod pos m
+--            fil = div pos m 
 --            n_m = if pos<=m then [] 
 --                          else z 
 
 
-posición_1 :: Eq a => a -> [a] -> Int
-posición_1 x ys =
-  if elem x ys then aux x ys
-  else 0
-    where 
-      aux x [] = 0
-      aux x (y:ys)
-        | x== y     = 1
-        | otherwise = 1 + aux x ys
+--posición_1 :: Eq a => a -> [a] -> Int
+--posición_1 x ys =
+--  if elem x ys then aux x ys
+--  else 0
+--    where 
+--      aux x [] = 0
+--      aux x (y:ys)
+--       | x== y     = 1
+--        | otherwise = 1 + aux x ys
 
 --     [[0,0,0,0],
 --      [1,0,0,0],

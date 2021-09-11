@@ -1,12 +1,10 @@
 module TestTiles where
-import Data.List
 --d:\facu\doctorado\materias\04pf\practica
 -- celeste = 0
 -- amarillo = 1
 
 -- Genera todas las teselas de Wang
 getTiles = [[west,south,east,north]|west<-[0,1], south<-[0,1], east<-[0,1], north<-[0,1]]
-
 --Crea n copias de la tesela indicada por su índice
 createTiles index 0 = []
 createTiles index n = [getATile index] ++ createTiles index (n-1)
@@ -17,6 +15,7 @@ subIndex (x:_) 0 = x
 subIndex (_:xs) n = subIndex xs (n-1)
 
 --Recupera una tesela de la lista original dado su índice
+--getATile :: Int -> (Integer, Integer, Integer, Integer)
 getATile :: Num a => a -> [Integer]
 getATile index = subIndex getTiles index
 
@@ -25,7 +24,19 @@ getSum west south east north = west * 8 + south * 4 + east * 2 + north
 --getSum north east south west = north * 8 + east * 4 + south * 2 + west
 --Retorna el indice dada un tesela tupla
 getTileIndex (west, south, east, north) = getSum west south east north
+--getTileIndex (north, east, south, west) = getSum north east south west
 
+-- getWest (x:xs) west = if subIndex x 0 == west then x else getWest xs west
+-- getNorth :: Eq t => [[t]] -> t -> [t]
+-- getNorth (x:xs) north = if subIndex x 3 == north then x else getNorth xs north
+
+-- para position west=0 north=3
+-- y parametros west y north ahora es match
+--getMatch (x:xs) match position = if subIndex x position == match then x else getMatch xs match position
+
+--myDrop [] n = []
+--myDrop xs 0 = xs
+--myDrop (x:xs) n = myDrop xs (n-1)
 
 --useTile (x:xs) typeof = myDrop getTypeofTyle 1
 --    where getTypeofTyle = subIndex (x:xs) typeof
@@ -38,16 +49,14 @@ getTileIndex (west, south, east, north) = getSum west south east north
 
 --completeSurface n m seed (x:xs) = useTile
 
---Funcion llamadora
+
 solveTiles' n m
---    | n * m > length possibleTiles
-      | n * m > length (tilesBag tilesType tilesAmount)
+    | n * m > length possibleTiles
         = error "la superficie es mayor que la cantidad de teselas"
 --    | otherwise = possibleTiles
     | otherwise = solutions (n*m) possibleTiles
     where 
---      possibleTiles = take 13000(allSolutions allSolutions')
-      possibleTiles = (permutaciones_1 allSolutions')
+      possibleTiles = allSolutions allSolutions'
 
 solutions p []      = []
 solutions p (x:xs)  = [x | x<-(x:xs),isSolution p x]
@@ -55,7 +64,6 @@ solutions p (x:xs)  = [x | x<-(x:xs),isSolution p x]
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
 --  11 y 12 wsenTiles ((solveTiles' 2 2)!!11)
-
 -- Convierte los indices de las teselas en teselas
 wsenTiles []      = []
 wsenTiles (x:xs)  = [getATile x] ++ wsenTiles xs
@@ -97,16 +105,10 @@ match' p (x:xs)
 
 --Tipos de teselas seleccionadas "se completa manualmente"
 tilesType :: [Int]
---tilesType = [13, 0, 1, 8]
-tilesType = [15, 2, 5]
---tilesType = [13, 2]
---tilesType = [0, 1]
-
+tilesType = [0, 1]
 --Cantidad de cada tesela seleccionada "se completa manualmente"
 tilesAmount :: [Int]
---tilesAmount = [4, 4, 4, 4]
-tilesAmount = [3, 3, 3]
---tilesAmount = [2, 2]
+tilesAmount = [2, 2]
 
 --Bolsa de teselas
 tilesBag :: [a] -> [Int] -> [a]
@@ -121,87 +123,12 @@ allSolutions :: [a] -> [[a]]
 allSolutions [] = [[]]
 allSolutions (x:xs) = [zs | ys <- allSolutions xs,
                             zs <- intercala x ys]
-
 intercala :: a -> [a] -> [[a]]
 intercala e [] = [[e]]
 intercala e (x:xs) = (e:x:xs) : [(x:ys) | ys <- (intercala e xs)]
-    
+
 allSolutions' :: [Int]
-allSolutions' = tilesBag tilesType tilesAmount  --cambiar por allTiles
-
-deleteDuplicate :: (Eq a) => [a] -> [a]
-deleteDuplicate [] = []
-deleteDuplicate (x:xs) = x : deleteDuplicate (filter (/= x) xs)
-
-deleteDuplicate1 :: Eq a => [a] -> [a]
-deleteDuplicate1 xs = [x | x <- nub xs]
-
-
-permutaciones_1 :: Eq a => [a] -> [[a]]
-permutaciones_1 [] = [[]]
-permutaciones_1 xs = deleteDuplicate([a:p | a <- xs, p <- permutaciones_1(xs \\ [a])])
-
---combinaciones :: Int -> [a] -> [[a]]
---combinaciones n xs = [ys | ys <- sublistas xs, length ys == n]
-
-
---combinaciones :: Integer -> [a] -> [[a]]
---combinaciones 0 _ = [[]]
---combinaciones _ [] = []
---combinaciones k (x:xs) = [x:ys | ys <- combinaciones (k-1) xs] ++ combinaciones k xs
-
---comb n k = (factorial n) `div` ((factorial k) * (factorial (n-k)))
-
---factoriales_3 :: Integer -> [Integer]
---factoriales_3 n = [factorial x | x <- [0..n]]
-
---combinaciones_1 :: Int -> [a] -> [[a]]
---combinaciones_1 n xs = [ys | ys <- sublistas xs, length ys == n]
-
---factorial :: (Integral a) => a -> a
---factorial 0 = 1
---factorial n = n * factorial (n - 1)
-
---sinRepetidos :: Eq a => [a] -> Bool
---sinRepetidos xs = nub xs == xs
-
---permutaciones_1 xs = [a:p | a <- xs, p <- permutaciones_1(xs \\ [a])]
-
---variaciones :: Int -> [a] -> [[a]]
---variaciones k xs = concatMap permutaciones (combinaciones k xs)
-
---variacionesR :: Int -> [a] -> [[a]]
---variacionesR 0 _  = [[]] 
---variacionesR k xs = [z:ys | z <- xs, ys <- variacionesR (k-1) xs]
-
---variacionesR :: Int -> [a] -> [[a]]
---variacionesR _ [] = [[]]
---variacionesR 0 _ = [[]]
---variacionesR k us = [u:vs | u <- us, vs <- variacionesR (k-1) us]
-
---variacionesR :: Integer -> [a] -> [[a]]
---variacionesR _ [] = [[]]
---variacionesR 0 _  = [[]] 
---variacionesR k xs = [z:ys | z <- xs, ys <- variacionesR (k-1) xs]
-
---variacionesRN :: Integer -> Integer -> [[Integer]]    
---variacionesRN n k = variacionesR k [1..n]
-
---igual_conjunto_2 :: Eq a => [a] -> [a] -> Bool
---igual_conjunto_2 xs ys = aux (nub xs) (nub ys)
---  where aux [] [] = True
---        aux (x:_) [] = False
---        aux [] (y:_) = False
---        aux (x:xs) ys = x `elem` ys && aux xs (delete x ys)
-
---igual_conjunto_3 :: (Eq a, Ord a) => [a] -> [a] -> Bool
---igual_conjunto_3 xs ys = sort (nub xs) == sort (nub ys)
-
-
---sublistas :: [a] -> [[a]]
---sublistas [] = [[]]
---sublistas (x:xs) = [x:ys | ys <- sub] ++ sub
---  where sub = sublistas xs
+allSolutions' = tilesBag tilesType tilesAmount
 
 --  En desarrollo
 --tomar :: Num a => [a] -> [[Integer]]

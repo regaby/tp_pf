@@ -18,16 +18,14 @@ img14 = Image.open("14.gif")
 img15 = Image.open("15.gif")
 img135 = Image.open("135.gif")
 
-n = 2 # rows
-m = 2 # cols
+n = 4 # rows
+m = 4 # cols
 seed = 15
 px = 32
 height = n * px
 width = m * px
 
-#tiles = [15,8,0,1,3,10,12,2,4,6,9,135,5,7,14,11]
-tiles = [13,2,13,2]
-
+tiles = [15,8,0,1,3,10,12,2,4,6,9,135,5,7,14,11]
 # creating a new image and pasting
 # the images
 img_tiles = Image.new("RGB", (width, height), "white")

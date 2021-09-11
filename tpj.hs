@@ -60,14 +60,46 @@ solveTiles' n m
 -- - hacer una lista con todos los tiles de 1 a 16 instanciados
 -- - iniciar superficie
 -- - ir iterando lista y comprobando si el tile coincide con los adyacentes
---  11 y 12
-wsenTiles []       = []
+--  11 y 12 wsenTiles ((solveTiles' 2 2)!!11)
+-- Convierte los indices de las teselas en teselas
+wsenTiles []      = []
 wsenTiles (x:xs)  = [getATile x] ++ wsenTiles xs
+
+--isSolution :: Int->[a]->bol
+--isSolution p (x:xs) = True && match ((x:xs)!!a) [] [] && isSolution p-1 (x:xs)
+isSolution 1 (x:xs) = True
+isSolution p (x:xs) = True && match' a (x:xs) && isSolution (p-1) (x:xs)
+  where
+    ntotal  = length (x:xs)
+    a       = (ntotal-p)+1
+--    fil = truncate (sqrt (fromIntegral ntotal))
+--    col = truncate (sqrt (fromIntegral ntotal))
+--    fil==0 || col==0  = 
+--    sol = True && take index (x:xs) ++ drop next_index (x:xs)
 
 initSurface x y = []
 
---matchTile west south east north =
---getNg ng = mod ng 3
+{-
+  Dadas de una a tres teselas determina si la primera empata 
+  con las demas
+  la segunda es la de la izquierda y
+  la tercera es al de arriba
+-}
+match [] (x:xs) []          = True
+match (y:ys) (x:xs) []      = (x:xs)!!0==(y:ys)!!2
+match (y:ys) (x:xs) (z:zs)  = (x:xs)!!0==(y:ys)!!2 && (x:xs)!!3==(z:zs)!!1
+match [] (x:xs) (z:zs)      = (x:xs)!!3==(z:zs)!!1
+
+match' p (x:xs)
+  | div p col == 0 = match ((x:xs)!!(p-1)) ((x:xs)!!p) []       --Primera fila (fila 0)
+  | mod p col==0 = match [] ((x:xs)!!p) ((x:xs)!!((p-col))) --Columna 0
+--  | mod p col>0 && div p col > 0 = match ((x:xs)!!(p-1)) ((x:xs)!!p) ((x:xs)!!((p-col)))  --
+  | otherwise = match ((x:xs)!!(p-1)) ((x:xs)!!p) ((x:xs)!!((p-col)))
+--  | otherwise = (x:xs)!!p==[1,0,0,0]
+  where
+    ntotal  = length (x:xs)
+    fil = truncate (sqrt (fromIntegral ntotal))
+    col = truncate (sqrt (fromIntegral ntotal))
 
 --Tipos de teselas seleccionadas "se completa manualmente"
 tilesType :: [Int]

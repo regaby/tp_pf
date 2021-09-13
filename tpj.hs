@@ -12,7 +12,7 @@ createTiles index 0 = []
 createTiles index n = [getATile index] ++ createTiles index (n-1)
 
 --Extrae la cabecera de la lista recursivamente hasta la n-esima
---subIndex :: (Eq t, Num t) =>  [p] -> t -> p
+subIndex :: (Eq t, Num t) =>  [p] -> t -> p
 subIndex (x:_) 0 = x
 subIndex (_:xs) n = subIndex xs (n-1)
 
@@ -26,7 +26,6 @@ getSum west south east north = west * 8 + south * 4 + east * 2 + north
 --Retorna el indice dada un tesela tupla
 getTileIndex (west, south, east, north) = getSum west south east north
 
-
 --useTile (x:xs) typeof = myDrop getTypeofTyle 1
 --    where getTypeofTyle = subIndex (x:xs) typeof
 
@@ -39,6 +38,15 @@ getTileIndex (west, south, east, north) = getSum west south east north
 --completeSurface n m seed (x:xs) = useTile
 
 --Funcion llamadora
+--solveTiles n m t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15
+--  | nTiles > t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11 + t12 + t13 + t14 + t15
+--    = error "la superficie es mayor que la cantidad de teselas"
+--  | otherwise 
+--  where
+--    nTiles = n*m
+--    [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15] = t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15
+--    tilesType' = foldl () [] [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15]
+
 solveTiles' n m
 --    | n * m > length possibleTiles
       | n * m > length (tilesBag tilesType tilesAmount)
@@ -46,7 +54,7 @@ solveTiles' n m
 --    | otherwise = possibleTiles
     | otherwise = solutions (n*m) possibleTiles
     where 
---      possibleTiles = take 13000(allSolutions allSolutions')
+--      possibleTiles = (allSolutions allSolutions')
       possibleTiles = (permutaciones_1 allSolutions')
 
 solutions p []      = []
@@ -69,10 +77,6 @@ isSolution p (x:xs) = True && match' a (wsenTiles (x:xs)) && isSolution (p-1) (x
     ntotal  = length (x:xs)
     a       = (ntotal-p)+1
 
---    sol = True && take index (x:xs) ++ drop next_index (x:xs)
-
---initSurface x y = []
-
 {-
   Dadas de una a tres teselas determina si la primera empata 
   con las demas
@@ -80,33 +84,38 @@ isSolution p (x:xs) = True && match' a (wsenTiles (x:xs)) && isSolution (p-1) (x
   la tercera es al de arriba
 -}
 match [] (x:xs) []          = True
-match (y:ys) (x:xs) []      = (x:xs)!!0==(y:ys)!!2
-match (y:ys) (x:xs) (z:zs)  = (x:xs)!!0==(y:ys)!!2 && (x:xs)!!3==(z:zs)!!1
-match [] (x:xs) (z:zs)      = (x:xs)!!3==(z:zs)!!1
+match (y:ys) (x:xs) []      = (x:xs)!!0==(y:ys)!!2  --Fila 0
+match (y:ys) (x:xs) (z:zs)  = (x:xs)!!0==(y:ys)!!2 && (x:xs)!!3==(z:zs)!!1  --Demás casos
+match [] (x:xs) (z:zs)      = (x:xs)!!3==(z:zs)!!1  --Columna 0
 
 match' p (x:xs)
   | div p col == 0 = match ((x:xs)!!(p-1)) ((x:xs)!!p) []       --Primera fila (fila 0)
   | mod p col==0 = match [] ((x:xs)!!p) ((x:xs)!!((p-col))) --Columna 0
---  | mod p col>0 && div p col > 0 = match ((x:xs)!!(p-1)) ((x:xs)!!p) ((x:xs)!!((p-col)))  --
   | otherwise = match ((x:xs)!!(p-1)) ((x:xs)!!p) ((x:xs)!!((p-col)))
---  | otherwise = (x:xs)!!p==[1,0,0,0]
   where
     ntotal  = length (x:xs)
     fil = truncate (sqrt (fromIntegral ntotal))
     col = truncate (sqrt (fromIntegral ntotal))
 
+--  | mod p col>0 && div p col > 0 = match ((x:xs)!!(p-1)) ((x:xs)!!p) ((x:xs)!!((p-col)))  --
+--  | otherwise = (x:xs)!!p==[1,0,0,0]
+
 --Tipos de teselas seleccionadas "se completa manualmente"
 tilesType :: [Int]
---tilesType = [13, 0, 1, 8]
-tilesType = [15, 2, 5]
---tilesType = [13, 2]
+--tilesType = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+--tilesType = [13, 0, 1, 0]
+--tilesType = [15, 11, 5]
+--tilesType = [15, 11, 5, 13]
+tilesType = [13, 2]
 --tilesType = [0, 1]
 
 --Cantidad de cada tesela seleccionada "se completa manualmente"
 tilesAmount :: [Int]
+--tilesAmount = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 --tilesAmount = [4, 4, 4, 4]
-tilesAmount = [3, 3, 3]
---tilesAmount = [2, 2]
+--tilesAmount = [3, 3, 1, 2]
+--tilesAmount = [3, 3, 3]
+tilesAmount = [2, 2]
 
 --Bolsa de teselas
 tilesBag :: [a] -> [Int] -> [a]
@@ -126,6 +135,16 @@ intercala :: a -> [a] -> [[a]]
 intercala e [] = [[e]]
 intercala e (x:xs) = (e:x:xs) : [(x:ys) | ys <- (intercala e xs)]
     
+--intercala :: a -> [a] -> [[a]]
+--intercala e [] = [[e]]
+--intercala e (x:xs) = sol
+--  where
+--    sol = (e:x:xs) : [(x:ys) | ys <- (intercala e xs)]
+--    sol = if (match ((wsenTiles[e])!!0) ((wsenTiles[x])!!0) []) then ((e:x:xs) : [(x:ys) | ys <- (intercala e xs)]) else []
+--if sol==True then ((e:x:xs) : [(x:ys) | ys <- (intercala e xs)]) else []
+--match (y:ys) (x:xs) []
+--wsenTiles (x:xs)
+
 allSolutions' :: [Int]
 allSolutions' = tilesBag tilesType tilesAmount  --cambiar por allTiles
 

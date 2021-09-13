@@ -27,7 +27,8 @@ width = m * px
 
 #tiles = [15,8,0,1,3,10,12,2,4,6,9,135,5,7,14,11]
 #tiles = [5,2,15,5,2,15,5,2,15]
-tiles = [5,5,5,15,15,15,11,11,11]
+#tiles = [5,5,5,15,15,15,11,11,11]
+tiles = [15,13,5,15,15,11,11,13,0]
 # creating a new image and pasting
 # the images
 img_tiles = Image.new("RGB", (width, height), "white")
